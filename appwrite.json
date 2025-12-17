@@ -1,0 +1,9 @@
+{
+  "projectId": "6910f8f60033ecd91396",
+  "projectName": "v-yes",
+  "settings": {
+    "installCommand": "npm install",
+    "buildCommand": "npm run build",
+    "outputDirectory": "dist"
+  }
+}
