@@ -4,7 +4,7 @@ A powerful real-time collaborative coding platform built with React and Appwrite
 
 ## 🚀 Features
 
-### ✨ Core Features
+### ✨ Core Features there
 - **User Authentication**
   - Email/Password authentication
   - GitHub OAuth integration
