@@ -74,9 +74,16 @@ export default function Workspace() {
     try {
       // Get workspace details
       const workspace = await getWorkspace(workspaceId);
-      
+
+      // Handle missing workspace gracefully
+      if (!workspace) {
+        toast.error('Workspace not found');
+        navigate('/workspaces');
+        return;
+      }
+
       // Join workspace if not already a member
-      if (!workspace.members.includes(user.$id)) {
+      if (!workspace.members || !workspace.members.includes(user.$id)) {
         await joinWorkspace(workspaceId, user.$id, user.name);
         toast.success('Joined workspace!');
       }

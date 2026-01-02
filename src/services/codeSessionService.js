@@ -235,6 +235,30 @@ if (!USE_MOCK) {
       return list[idx];
     }
 
+    async updateCursorPosition(sessionId, userId, position) {
+      const list = this._read();
+      const idx = list.findIndex(s => s.$id === sessionId);
+      if (idx === -1) return null;
+      const session = list[idx];
+      session.cursorPositions = session.cursorPositions || {};
+      session.cursorPositions[userId] = position;
+      list[idx] = session;
+      this._write(list);
+      return session;
+    }
+
+    async updateSelection(sessionId, userId, selection) {
+      const list = this._read();
+      const idx = list.findIndex(s => s.$id === sessionId);
+      if (idx === -1) return null;
+      const session = list[idx];
+      session.selections = session.selections || {};
+      session.selections[userId] = selection;
+      list[idx] = session;
+      this._write(list);
+      return session;
+    }
+
     async deleteCodeSession(sessionId) {
       const list = this._read();
       const newList = list.filter(s => s.$id !== sessionId);

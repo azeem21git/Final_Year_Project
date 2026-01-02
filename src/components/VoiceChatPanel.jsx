@@ -20,6 +20,16 @@ export default function VoiceChatPanel({ workspaceId, isOwner, settings }) {
 
   const handleConnect = async () => {
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        toast.error('Microphone access is not supported by your browser');
+        return;
+      }
+
+      if (!window.isSecureContext && location.hostname !== 'localhost') {
+        toast.error('Microphone requires a secure context (HTTPS or localhost)');
+        return;
+      }
+
       // Request microphone permission
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       localStreamRef.current = stream;
@@ -28,10 +38,22 @@ export default function VoiceChatPanel({ workspaceId, isOwner, settings }) {
 
       // Here you would establish WebRTC connections with other users
       // This would involve signaling through Appwrite Realtime
-      
+
     } catch (error) {
       console.error('Error connecting to voice chat:', error);
-      toast.error('Failed to connect to voice chat');
+      if (error && error.name) {
+        if (error.name === 'NotAllowedError' || error.name === 'SecurityError') {
+          toast.error('Microphone access denied — allow microphone permissions and reload the page');
+          return;
+        }
+
+        if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+          toast.error('No microphone found. Please connect a microphone');
+          return;
+        }
+      }
+
+      toast.error(`Failed to connect: ${error?.message || error}`);
     }
   };
 

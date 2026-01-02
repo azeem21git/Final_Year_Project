@@ -13,9 +13,10 @@ export const useWorkspaceStore = create((set, get) => ({
     try {
       set({ loading: true, error: null });
       const workspace = await workspaceService.createWorkspace(workspaceData);
+      const normalized = normalizeWorkspace(workspace);
       set((state) => ({
-        workspaces: [workspace, ...state.workspaces],
-        currentWorkspace: workspace,
+        workspaces: [normalized, ...state.workspaces],
+        currentWorkspace: normalized,
         loading: false,
       }));
       return workspace;
@@ -30,8 +31,9 @@ export const useWorkspaceStore = create((set, get) => ({
     try {
       set({ loading: true, error: null });
       const workspace = await workspaceService.getWorkspace(workspaceId);
-      set({ currentWorkspace: workspace, loading: false });
-      return workspace;
+      const normalized = normalizeWorkspace(workspace);
+      set({ currentWorkspace: normalized, loading: false });
+      return normalized;
     } catch (error) {
       set({ loading: false, error: error.message });
       throw error;
@@ -43,8 +45,9 @@ export const useWorkspaceStore = create((set, get) => ({
     try {
       set({ loading: true, error: null });
       const response = await workspaceService.getUserWorkspaces(userId);
-      set({ workspaces: response.documents, loading: false });
-      return response.documents;
+      const docs = (response.documents || []).map(normalizeWorkspace);
+      set({ workspaces: docs, loading: false });
+      return docs;
     } catch (error) {
       set({ loading: false, error: error.message });
       throw error;
@@ -56,8 +59,9 @@ export const useWorkspaceStore = create((set, get) => ({
     try {
       set({ loading: true, error: null });
       const workspace = await workspaceService.joinWorkspace(workspaceId, userId, userName);
-      set({ currentWorkspace: workspace, loading: false });
-      return workspace;
+      const normalized = normalizeWorkspace(workspace);
+      set({ currentWorkspace: normalized, loading: false });
+      return normalized;
     } catch (error) {
       set({ loading: false, error: error.message });
       throw error;
@@ -95,8 +99,9 @@ export const useWorkspaceStore = create((set, get) => ({
   updateWorkspaceSettings: async (workspaceId, settings) => {
     try {
       const workspace = await workspaceService.updateWorkspaceSettings(workspaceId, settings);
-      set({ currentWorkspace: workspace });
-      return workspace;
+      const normalized = normalizeWorkspace(workspace);
+      set({ currentWorkspace: normalized });
+      return normalized;
     } catch (error) {
       set({ error: error.message });
       throw error;
@@ -132,3 +137,23 @@ export const useWorkspaceStore = create((set, get) => ({
   // Clear error
   clearError: () => set({ error: null }),
 }));
+
+// Helper to normalize workspace data (parse JSON fields)
+function normalizeWorkspace(workspace) {
+  if (!workspace) return workspace;
+
+  const copy = { ...workspace };
+
+  try {
+    if (typeof copy.settings === 'string') {
+      copy.settings = JSON.parse(copy.settings);
+    }
+  } catch (e) {
+    copy.settings = copy.settings || {};
+  }
+
+  // memberNames should remain a string (components parse it), but ensure it's defined
+  if (!copy.memberNames) copy.memberNames = JSON.stringify({});
+
+  return copy;
+}
