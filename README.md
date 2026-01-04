@@ -37,11 +37,19 @@ A powerful real-time collaborative coding platform built with React and Appwrite
   - Toast notifications
   - Dark mode editor
 
+- **🤖 AI-Powered Code Assistant (Powered by Gemini)**
+  - **Auto Code Suggestions**: Get intelligent code completions as you type
+  - **Code Explanation**: Select code and get AI-generated explanations
+  - **Code Optimization**: Receive suggestions to improve performance and readability
+  - **Debug Assistant**: Get help identifying and fixing code issues
+  - Supports all 9+ programming languages
+
 ## 🛠️ Tech Stack
 
 - **Frontend**: React 19, Vite
 - **Backend**: Appwrite (BaaS)
 - **Code Editor**: Monaco Editor (VS Code editor)
+- **AI**: Google Gemini API
 - **Styling**: Tailwind CSS 4
 - **State Management**: Zustand
 - **Real-time**: Appwrite Realtime
@@ -150,7 +158,7 @@ Permissions:
 
 ### 3. Environment Configuration
 
-1. Copy `.env.example` to `.env`
+1. Copy `.env.example` to `.env` (or create `.env.local`)
 2. Update `.env` with your Appwrite credentials:
 ```env
 VITE_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
@@ -161,6 +169,19 @@ VITE_APPWRITE_WORKSPACES_COLLECTION_ID=workspaces
 VITE_APPWRITE_MESSAGES_COLLECTION_ID=messages
 VITE_APPWRITE_CODE_SESSIONS_COLLECTION_ID=code_sessions
 ```
+
+3. **Add Gemini AI API Key** for AI features:
+```env
+VITE_GEMINI_API_KEY=your-gemini-api-key
+```
+
+To get your Gemini API key:
+- Visit [Google AI Studio](https://aistudio.google.com)
+- Click "Get API Key"
+- Create a new API key in your Google project
+- Copy it to `.env.local`
+
+For detailed setup, see [GEMINI_SETUP.md](./GEMINI_SETUP.md)
 
 ### 4. Run the Application
 
@@ -210,6 +231,22 @@ The app will be available at `http://localhost:5173`
   - Mute/unmute your microphone
   - Owner can control participant audio
 
+### Using AI Features
+
+All AI features are powered by Google Gemini API:
+
+1. **Auto Code Suggestions**
+   - Type code naturally
+   - AI provides intelligent completions as you type
+   - Press "Accept" to insert or "Dismiss" to ignore
+
+2. **AI Menu** (Click the Sparkles icon)
+   - **Explain Code**: Select code → Click AI → Explain Code
+   - **Optimize**: Select code → Click AI → Optimize
+   - **Debug Code**: Select code → Click AI → Debug Code
+
+See [GEMINI_SETUP.md](./GEMINI_SETUP.md) for detailed AI configuration.
+
 ## 🎨 Project Structure
 
 ```
@@ -229,7 +266,8 @@ src/
 │   ├── authService.js  # Authentication
 │   ├── workspaceService.js # Workspace operations
 │   ├── chatService.js  # Chat operations
-│   └── codeSessionService.js # Code session operations
+│   ├── codeSessionService.js # Code session operations
+│   └── aiService.js    # Gemini AI integration
 ├── store/             # Zustand state management
 │   ├── authStore.js
 │   ├── workspaceStore.js
@@ -277,6 +315,13 @@ MIT License
 **Issue: "Voice chat not connecting"**
 - Check microphone permissions in browser
 - Verify WebRTC is supported
+
+**Issue: "AI features not working"**
+- Check that `VITE_GEMINI_API_KEY` is set in `.env.local`
+- Verify your Gemini API key is valid
+- Check browser console for API errors
+- Ensure your Google project has sufficient quota
+- See [GEMINI_SETUP.md](./GEMINI_SETUP.md) for detailed troubleshooting
 - Check firewall settings
 
 ## 📞 Support
